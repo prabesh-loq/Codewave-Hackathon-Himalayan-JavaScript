@@ -1,0 +1,97 @@
+# Margaa — Kathmandu Public Transport Routing
+
+**Infinity Hackathon · TekBay Academy · Track: Math & Computing for Good**
+
+Multi-bus journey planner for Kathmandu Valley with walking fallback,
+place-name search, geolocation, and one-click demo trips. Plans routes
+across 8 hand-curated lines with transfer optimization.
+
+## Run it
+
+No build, no npm. Just open it.
+
+```bash
+# Option 1: any static server
+python3 -m http.server 8000
+# then open http://localhost:8000/
+
+# Option 2: VS Code Live Server extension → Right-click index.html → Open
+
+# Option 3: deploy to GitHub Pages
+git init && git add . && git commit -m "init"
+# push to GitHub → Settings → Pages → main branch → save
+```
+
+## Demo script (90 seconds)
+
+1. **Open the app.** Point at the brand line: "8 lines, 41 stops across the valley."
+2. **Click the demo button "Gokarna → Jawalakhel"**. Whole flow plays out: walk in, R3 to Ratna Park, transfer (gold ring on map), R1 to Jawalakhel, walk out.
+3. **Read the timeline aloud**: total minutes, transfers, buses. "This is what an hour-long mystery becomes when transit is legible."
+4. **Type "Bhatbhateni" in search** to show place-name search works for arbitrary places, not just stops.
+5. **Pick another endpoint, hit Swap.** Show interactivity.
+6. **Switch to "Simulate" tab** — preview Part 2 (slot allocation).
+
+## Features (Part 1)
+
+| Feature | Detail |
+|---|---|
+| Multi-bus routing | Modified Dijkstra over a stop-graph with transfer penalty. |
+| Walking fallback | Origin/destination snap to nearest stop. Long walks (>1.5 km) trigger a Pathao/inDrive rideshare suggestion in the timeline. |
+| Place search | Nominatim with Kathmandu bounding box + instant substring match against our stop list. |
+| Geolocation | "Use my location" button. Falls back to Gokarna for off-valley demos. |
+| Click-to-set | Click any bus stop circle, or anywhere on the map. |
+| Demo presets | Three one-click pitch trips at the top of the sidebar. |
+| Route legend | Hover any line in the legend to highlight it on the map. |
+| Stops toggle | Declutter the map when needed. |
+| Mobile | Map on top, sidebar below, 50/50 split. |
+
+## File layout
+
+```
+margaa/
+├── index.html      ← shell, fonts, Leaflet imports, sidebar markup
+├── styles.css      ← visual design (dark sidebar / bright map)
+├── data.js         ← STOPS + ROUTES (edit to add/fix routes)
+├── app.js          ← routing graph, Dijkstra, map UI, search, geolocation
+└── README.md
+```
+
+## How it works (Part 1 — Trip Planning)
+
+1. **Graph build** — every consecutive pair of stops on a route becomes a bidirectional edge tagged with `routeId` and great-circle distance.
+2. **Modified Dijkstra** — search state is `(stopId, lastRouteId)`. Switching `lastRouteId` mid-search triggers a `TRANSFER_PENALTY_KM` so the algorithm naturally prefers fewer transfers when distances are comparable.
+3. **Walking fallback** — origin/destination clicks snap to the nearest stop (haversine). If the snap distance > `MAX_WALK_M`, the timeline surfaces a rideshare card.
+4. **Trip summary** — total minutes = walk-in + bus-time + half-headway wait at first stop + full-headway wait per transfer + walk-out.
+
+## Tunables (top of `app.js`)
+
+```js
+TRANSFER_PENALTY_KM = 1.5  // discourages transfers
+MAX_WALK_M          = 1500 // beyond this → rideshare suggestion
+WALK_SPEED_KMH      = 4.5
+BUS_SPEED_KMH       = 18
+```
+
+## Extending routes
+
+Edit `data.js`. Add stops to `STOPS`, then reference their ids in a route's `stops` array. Each route also has `frequencyMin` and `avgSpeedKmh` — these feed the time estimate (and will feed Part 2's simulation).
+
+## Known limits
+
+- Coordinates are eyeballed; some are off by 100–300 m.
+- Single trip option shown (no "fastest vs. fewest transfers" comparison).
+- Nominatim has soft rate limits; rapid typing during demo could throttle.
+
+## Part 2 — Slot Allocation Simulation (next)
+
+Tab is wired up. Plan:
+- Identify shared corridor segments across routes (Ring Road, Tripureshwor–Maitighar, etc.).
+- Assign each bus a discrete time slot on shared segments via greedy / weighted matching.
+- Side-by-side animation: today's bunching vs. coordinated departures.
+- Headline metric: variance reduction in arrival gaps on Ring Road.
+
+## Pitch one-liner
+
+> Yatayat showed the way over a decade ago, then went dark. Margaa rebuilds it
+> with modern routing, walking fallback, and — uniquely — a coordination layer
+> that models how to *reduce* the congestion the buses themselves cause.

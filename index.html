@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Margaa — Kathmandu Public Transport Routing</title>
+  <meta name="description" content="Plan multi-bus journeys across Kathmandu Valley. Built at Infinity Hackathon by TekBay Academy.">
+
+  <!-- Fonts (graceful fallback to system fonts if blocked) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Inter+Tight:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Leaflet (jsdelivr is generally faster + more reliable in South Asia than unpkg) -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css">
+
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <!-- Top-level error banner (hidden until something errors) -->
+  <div id="errorBanner" class="error-banner" hidden></div>
+
+  <div class="app">
+    <aside class="sidebar">
+      <div class="brand">
+        <h1>Margaa<span class="dot"></span></h1>
+        <div class="tagline" id="statsLine">Kathmandu Transit · Infinity 2026</div>
+      </div>
+
+      <nav class="tabs">
+        <button class="tab active" data-view="plan">Plan a trip</button>
+        <button class="tab" data-view="simulate">Simulate</button>
+      </nav>
+
+      <section class="view active" data-view="plan">
+        <div class="search-wrap">
+          <div class="search-bar">
+            <span class="search-icon">🔍</span>
+            <input type="text" id="searchInput" placeholder="Search any place in the valley…" autocomplete="off">
+            <button class="search-locate" id="locateBtn" title="Use my location">📍</button>
+          </div>
+          <div class="search-dropdown" id="searchDropdown"></div>
+        </div>
+
+        <div class="demos">
+          <div class="demos-label">Try a sample trip</div>
+          <div class="demos-row" id="demoTrips"></div>
+        </div>
+
+        <div class="io">
+          <div class="io-row active" id="originRow">
+            <div class="io-dot from"></div>
+            <div class="io-text">
+              <div class="io-label">From</div>
+              <div class="io-value" id="originLabel">Tap on map, search, or pick a stop</div>
+            </div>
+          </div>
+          <div class="io-row" id="destRow">
+            <div class="io-dot to"></div>
+            <div class="io-text">
+              <div class="io-label">To</div>
+              <div class="io-value" id="destLabel">Tap on map, search, or pick a stop</div>
+            </div>
+          </div>
+
+          <div class="io-actions">
+            <button class="btn-ghost" id="swapBtn">⇅ Swap</button>
+            <button class="btn-ghost" id="clearBtn">Clear</button>
+          </div>
+        </div>
+
+        <div class="results-wrap">
+          <div id="results"></div>
+        </div>
+
+        <div class="map-controls">
+          <label class="toggle">
+            <input type="checkbox" id="stopsToggle" checked>
+            <span>Show all bus stops</span>
+          </label>
+        </div>
+
+        <div class="legend-wrap" id="legendWrap">
+          <button class="legend-toggle" id="legendToggle">
+            <span>Lines</span>
+            <span class="caret">▾</span>
+          </button>
+          <div class="legend" id="legend"></div>
+        </div>
+
+        <div class="foot">
+          Hand-curated routes · OSM tiles ©&nbsp;CARTO · Search via Nominatim<br>
+          <strong>Margaa</strong> — Team submission, Infinity Hackathon
+        </div>
+      </section>
+
+      <section class="view" data-view="simulate">
+        <div class="sim-placeholder">
+          <h3>Slot Allocation Simulation</h3>
+          <p>Coming next: a side-by-side comparison of today's bus bunching on shared corridors vs. our slot-token coordination model.</p>
+          <p style="font-size:11px; color:var(--text-3); margin-top:24px;">Reduces peak overlap on Ring Road by an expected 30–45% under uniform load.</p>
+        </div>
+      </section>
+    </aside>
+
+    <main id="map">
+      <!-- If Leaflet fails to init, app.js will replace this content with an error message -->
+      <div class="map-loading">Loading map…</div>
+    </main>
+  </div>
+
+  <!-- Leaflet JS (jsdelivr, no crossorigin) -->
+  <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js"></script>
+
+  <!-- App -->
+  <script src="data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
