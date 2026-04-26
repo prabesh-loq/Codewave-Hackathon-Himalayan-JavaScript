@@ -35,6 +35,24 @@ if (!window.MARGAA_DATA) {
 // Re-declaring them here with const would throw a SyntaxError in any browser
 // because both scripts share the same global lexical scope.
 
+const IC = {
+  walk: '<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="13" cy="4.25" r="1.5" fill="currentColor"/><path d="M10 10.5L13.75 8.25L16.25 10.75L14.5 14.5" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/><path d="M8 20L11 15.5L14 17.5L15.25 20" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/><path d="M9.5 12.5L6.75 15.25" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/></svg>',
+  bus: '<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M7 3.5H17C19.7614 3.5 22 5.73858 22 8.5V14.5C22 16.1569 20.6569 17.5 19 17.5H5C3.34315 17.5 2 16.1569 2 14.5V8.5C2 5.73858 4.23858 3.5 7 3.5Z" stroke="currentColor" stroke-width="1.8"/><path d="M2.75 10.5H21.25" stroke="currentColor" stroke-width="1.8"/><circle cx="7.75" cy="14.5" r="1.35" fill="currentColor"/><circle cx="16.25" cy="14.5" r="1.35" fill="currentColor"/><path d="M8 17.5V20" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M16 17.5V20" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>',
+  transfer: '<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M16 4L20 8L16 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 8H20" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M8 12L4 16L8 20" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M20 16H4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>',
+  pin: '<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 21C12 21 5 15.25 5 9.75C5 5.74694 8.13401 2.5 12 2.5C15.866 2.5 19 5.74694 19 9.75C19 15.25 12 21 12 21Z" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="9.75" r="2.5" fill="currentColor"/></svg>',
+  stop: '<svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="8" cy="8" r="5" fill="currentColor"/></svg>',
+  play: '<svg viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M8 5.75V18.25L18 12L8 5.75Z"/></svg>',
+  pause: '<svg viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><rect x="7" y="5" width="3.75" height="14" rx="1.2"/><rect x="13.25" y="5" width="3.75" height="14" rx="1.2"/></svg>',
+  replay: '<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M8 7H4V3" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/><path d="M5 11C5.65952 7.83382 8.47279 5.5 11.75 5.5C15.5239 5.5 18.6404 8.59342 18.6404 12.375C18.6404 16.1566 15.5239 19.25 11.75 19.25C9.09384 19.25 6.79172 17.7428 5.625 15.5312" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/></svg>',
+  flag: '<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M6 21V4.5C6.8 4 8.1 3.5 9.75 3.5C12.5 3.5 13.75 5 16.5 5C18.05 5 19.35 4.6 20 4.25V13C19.35 13.35 18.05 13.75 16.5 13.75C13.75 13.75 12.5 12.25 9.75 12.25C8.1 12.25 6.8 12.75 6 13.25" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>'
+};
+
+function tripButtonMarkup(mode) {
+  const label = mode === "pause" ? "Stop trip" : mode === "replay" ? "Replay trip" : "Play trip";
+  const icon = mode === "pause" ? IC.pause : mode === "replay" ? IC.replay : IC.play;
+  return `<span class="btn-play-icon" aria-hidden="true">${icon}</span><span>${label}</span>`;
+}
+
 // ---- Tunables ----------------------------------------------------------
 const TRANSFER_PENALTY_KM = 1.5;
 const MAX_WALK_M          = 1500;
@@ -365,9 +383,9 @@ function planMultipleTrips(originLatLng, destLatLng) {
 // =========================================================================
 
 const DEMO_TRIPS = [
-  { id: "demo1", label: "Gokarna → Jawalakhel",     from: "gokarna",        to: "jawalakhel" },
-  { id: "demo2", label: "Bhaktapur → Kirtipur",     from: "bhaktapur",      to: "kirtipur"   },
-  { id: "demo3", label: "Budhanilkantha → Airport", from: "budhanilkantha", to: "airport"    },
+  { id: "demo1", label: "Gokarna to Jawalakhel",     from: "gokarna",        to: "jawalakhel" },
+  { id: "demo2", label: "Bhaktapur to Kirtipur",     from: "bhaktapur",      to: "kirtipur"   },
+  { id: "demo3", label: "Budhanilkantha to Airport", from: "budhanilkantha", to: "airport"    },
 ];
 
 function escapeHtml(s) {
@@ -377,13 +395,19 @@ function escapeHtml(s) {
 
 function emptyState() {
   return `<div class="empty">
-    <p><strong>Plan a trip in three ways</strong></p>
+    <div class="empty-kicker">Ready to route</div>
+    <h2>Find the clearest bus trip across Kathmandu Valley.</h2>
+    <p>Search a place, tap two points on the map, or start from one of the sample trips below.</p>
+    <div class="empty-grid">
+      <div class="empty-item"><strong>Search fast</strong><span>Places and stops stay one tap away.</span></div>
+      <div class="empty-item"><strong>Compare options</strong><span>See time, fare, buses, and changes in one panel.</span></div>
+      <div class="empty-item"><strong>Travel smarter</strong><span>Long walks are called out before you commit.</span></div>
+    </div>
     <ul class="howto">
       <li>Search any place above</li>
       <li>Tap two points on the map</li>
-      <li>Click a bus stop circle</li>
+      <li>Select a nearby bus stop</li>
     </ul>
-    <p class="muted">Or click a demo trip below the search bar to see Margaa work end-to-end.</p>
   </div>`;
 }
 
@@ -401,7 +425,7 @@ function calcFare(distKm) {
 
 function rideshareSuggestion(m) {
   return `<div class="rideshare">
-    <span>This stretch is ${formatMeters(m)} — try a rideshare:</span>
+    <span>This stretch is ${formatMeters(m)}. A rideshare may save time here.</span>
     <div class="rs-buttons">
       <a href="https://pathao.com/np/" target="_blank" rel="noopener">Pathao</a>
       <a href="https://indrive.com/en/cities/np/kathmandu/" target="_blank" rel="noopener">inDrive</a>
@@ -458,6 +482,7 @@ function renderStaticUI() {
       const view = tab.dataset.view;
       document.querySelectorAll(".view").forEach(v => v.classList.toggle("active", v.dataset.view === view));
       if (view !== "plan") stopAnimation();
+      if (view === "simulate") initSimulation(); else stopSimulation();
     });
   });
 
@@ -600,9 +625,9 @@ function showSearchDropdown(items) {
     return;
   }
   sd.innerHTML = items.map((it, i) => {
-    if (it.type === "loading") return `<div class="sr-loading">Searching the map…</div>`;
+    if (it.type === "loading") return `<div class="sr-loading">Searching the map...</div>`;
     return `<button class="sr-item" data-idx="${i}">
-      <span class="sr-icon ${it.type}">${it.type === "stop" ? "●" : "📍"}</span>
+      <span class="sr-icon ${it.type}">${it.type === "stop" ? IC.stop : IC.pin}</span>
       <span class="sr-text">
         <span class="sr-name">${escapeHtml(it.name)}</span>
         ${it.sub ? `<span class="sr-sub">${escapeHtml(it.sub)}</span>` : ""}
@@ -1030,7 +1055,7 @@ function renderTripPanel(trip) {
   const legFares = trip.legs.map(leg => calcFare(legDistanceKm(leg)));
   const totalFare = legFares.reduce((a, b) => a + b, 0);
   const fareBreakdown = trip.legs.length > 1
-    ? `<div class="fare-breakdown">${legFares.map(f => '₹' + f).join(' + ')} = ₹${totalFare}</div>`
+    ? `<div class="fare-breakdown">${legFares.map(f => 'Rs ' + f).join(' + ')} = Rs ${totalFare}</div>`
     : '';
 
   let html = `
@@ -1038,9 +1063,9 @@ function renderTripPanel(trip) {
       <div class="chip primary"><span class="chip-num">${trip.totalMin}</span><span class="chip-lbl">min</span></div>
       <div class="chip"><span class="chip-num">${trip.transfers}</span><span class="chip-lbl">transfer${trip.transfers===1?'':'s'}</span></div>
       <div class="chip"><span class="chip-num">${trip.legs.length}</span><span class="chip-lbl">bus${trip.legs.length===1?'':'es'}</span></div>
-      <div class="chip"><span class="chip-num">₹${totalFare}</span><span class="chip-lbl">fare</span></div>
+      <div class="chip"><span class="chip-num">Rs ${totalFare}</span><span class="chip-lbl">fare</span></div>
     </div>
-    <button class="btn-play" id="playTripBtn">&#9654; Play trip</button>
+    <button class="btn-play" id="playTripBtn">${tripButtonMarkup("play")}</button>
     ${fareBreakdown}
     <ol class="timeline">`;
 
@@ -1052,7 +1077,7 @@ function renderTripPanel(trip) {
     ? `${formatMeters(walkStartM)} to bus route · near ${escapeHtml(oStop.stop.name)}${walkStartWarn ? ' · long walk' : ''}`
     : `${formatMeters(walkStartM)}${walkStartWarn ? ' · long walk' : ''}`;
   html += `<li class="step walk ${walkStartWarn ? 'warn' : ''}">
-    <div class="step-icon">🚶</div>
+    <div class="step-icon">${oRoute ? IC.flag : IC.walk}</div>
     <div class="step-body">
       <div class="step-title">${oWalkTitle}</div>
       <div class="step-sub">${oWalkSub}</div>
@@ -1070,17 +1095,17 @@ function renderTripPanel(trip) {
     const toName   = STOP_BY_ID[leg.stops[leg.stops.length - 1]].name;
     const intermediate = leg.stops.length - 2;
     html += `<li class="step bus" style="--route-color:${route.color}">
-      <div class="step-icon">🚌</div>
+      <div class="step-icon">${IC.bus}</div>
       <div class="step-body">
         <div class="route-tag">${escapeHtml(route.short)}</div>
-        <div class="step-title">${escapeHtml(fromName)} → ${escapeHtml(toName)}</div>
-        <div class="step-sub">${escapeHtml(route.name)} · ${km} km${intermediate > 0 ? ` · ${intermediate} stop${intermediate===1?'':'s'} between` : ''}</div>
-        <div class="step-fare">₹${legFare}<span class="step-fare-lbl"> this leg</span></div>
+        <div class="step-title">${escapeHtml(fromName)} &rarr; ${escapeHtml(toName)}</div>
+        <div class="step-sub">${escapeHtml(route.name)} &middot; ${km} km${intermediate > 0 ? ` &middot; ${intermediate} stop${intermediate===1?'':'s'} between` : ''}</div>
+        <div class="step-fare">Rs ${legFare}<span class="step-fare-lbl"> this leg</span></div>
       </div>
     </li>`;
     if (i < trip.legs.length - 1) {
       html += `<li class="step transfer">
-        <div class="step-icon">↻</div>
+        <div class="step-icon">${IC.transfer}</div>
         <div class="step-body"><div class="step-title">Transfer at ${escapeHtml(toName)}</div></div>
       </li>`;
     }
@@ -1091,7 +1116,7 @@ function renderTripPanel(trip) {
     ? `${formatMeters(walkEndM)} from bus route to destination${walkEndWarn ? ' · long walk' : ''}`
     : `${formatMeters(walkEndM)}${walkEndWarn ? ' · long walk' : ''}`;
   html += `<li class="step walk ${walkEndWarn ? 'warn' : ''}">
-    <div class="step-icon">🚶</div>
+    <div class="step-icon">${IC.walk}</div>
     <div class="step-body">
       <div class="step-title">Walk to destination</div>
       <div class="step-sub">${dWalkSub}</div>
@@ -1149,7 +1174,7 @@ function renderOneOption(option) {
     </div>`;
 
   // ── Play button ────────────────────────────────────────────────────────
-  const playBtnHtml = '<button class="btn-play" id="playTripBtn">&#9654; Play trip</button>';
+  const playBtnHtml = `<button class="btn-play" id="playTripBtn">${tripButtonMarkup("play")}</button>`;
 
   // ── Step timeline ──────────────────────────────────────────────────────
   let stepsHtml = '<div class="steps-list">';
@@ -1163,7 +1188,7 @@ function renderOneOption(option) {
       <div class="step-r-track"><div class="step-r-dot walk-d"></div><div class="step-r-line"></div></div>
       <div class="step-r-body">
         <div class="step-r-head">
-          <span class="step-r-name">🚶 ${walkInTitle}</span>
+          <span class="step-r-name"><span class="step-ic">${oRoute ? IC.flag : IC.walk}</span>${walkInTitle}</span>
           <span class="step-r-dur">${Math.max(1, Math.round(walkInMin))} min</span>
         </div>
         <div class="step-r-sub">${walkInSub}${walkInWarn ? ' · <strong>long walk</strong>' : ''}</div>
@@ -1185,21 +1210,21 @@ function renderOneOption(option) {
         <div class="step-r-body">
           <div class="step-r-head">
             <span class="step-r-chip" style="background:var(--rc)">${escapeHtml(leg.route?.short || leg.routeId)}</span>
-            <span class="step-r-stops">${escapeHtml(fromStop?.name || '?')} → ${escapeHtml(toStop?.name || '?')}</span>
+            <span class="step-r-stops">${escapeHtml(fromStop?.name || '?')} &rarr; ${escapeHtml(toStop?.name || '?')}</span>
             <span class="step-r-dur">${leg.travelMin} min</span>
           </div>
           <div class="step-r-sub">
-            ${escapeHtml(leg.route?.name || '')} · ${leg.distKm.toFixed(1)} km${leg.intermediate > 0 ? ` · ${leg.intermediate} stop${leg.intermediate > 1 ? 's' : ''} in between` : ''}
-            <br><span class="step-r-wait">~${leg.waitMin} min wait · bus every ${leg.route?.frequencyMin || '?'} min</span>
+            ${escapeHtml(leg.route?.name || '')} &middot; ${leg.distKm.toFixed(1)} km${leg.intermediate > 0 ? ` &middot; ${leg.intermediate} stop${leg.intermediate > 1 ? 's' : ''} in between` : ''}
+            <br><span class="step-r-wait">~${leg.waitMin} min wait &middot; bus every ${leg.route?.frequencyMin || '?'} min</span>
           </div>
-          <span class="step-r-fare">₹${leg.fare}</span><span class="step-r-fare-lbl"> this leg</span>
+          <span class="step-r-fare">Rs ${leg.fare}</span><span class="step-r-fare-lbl"> this leg</span>
         </div>
       </div>`;
     if (i < legs.length - 1) {
       stepsHtml += `
         <div class="step-r xfer-r">
           <div class="step-r-track"><div class="step-r-dot xfer-d"></div><div class="step-r-line" style="min-height:8px"></div></div>
-          <div class="step-r-body"><div class="xfer-label">↻ Change at ${escapeHtml(toStop?.name || '?')}</div></div>
+          <div class="step-r-body"><div class="xfer-label"><span class="step-ic">${IC.transfer}</span>Change at ${escapeHtml(toStop?.name || '?')}</div></div>
         </div>`;
     }
   });
@@ -1214,7 +1239,7 @@ function renderOneOption(option) {
       <div class="step-r-track"><div class="dest-dot"></div></div>
       <div class="step-r-body">
         <div class="step-r-head">
-          <span class="step-r-name">🚶 Walk to destination</span>
+          <span class="step-r-name"><span class="step-ic">${IC.walk}</span>Walk to destination</span>
           <span class="step-r-dur">${Math.max(1, Math.round(walkOutMin))} min</span>
         </div>
         <div class="step-r-sub">${walkOutSub}${walkOutWarn ? ' · <strong>long walk</strong>' : ''}</div>
@@ -1226,7 +1251,7 @@ function renderOneOption(option) {
 
   // ── Fare footer ────────────────────────────────────────────────────────
   const breakdown = legs.length > 1
-    ? legs.map(l => '₹' + l.fare).join(' + ') + ' = ₹' + totalFare
+    ? legs.map(l => 'Rs ' + l.fare).join(' + ') + ' = Rs ' + totalFare
     : '';
   const fareHtml = `
     <div class="fare-footer">
@@ -1234,7 +1259,7 @@ function renderOneOption(option) {
         <div class="fare-footer-label">Total fare</div>
         ${breakdown ? `<div class="fare-footer-breakdown">${breakdown}</div>` : ''}
       </div>
-      <span class="fare-footer-total">₹${totalFare}</span>
+      <span class="fare-footer-total">Rs ${totalFare}</span>
     </div>`;
 
   return barHtml + metaHtml + playBtnHtml + stepsHtml + fareHtml;
@@ -1262,7 +1287,7 @@ function renderMultipleRoutes(options) {
       <button class="ropt ${i === 0 ? 'active' : ''}" data-idx="${i}">
         <span class="ropt-label">${escapeHtml(opt.label)}</span>
         <span class="ropt-time">${opt.totalMin}<small> min</small></span>
-        <span class="ropt-meta">${chg} · ₹${opt.totalFare}</span>
+        <span class="ropt-meta">${chg} · Rs ${opt.totalFare}</span>
       </button>`;
   });
   tabsHtml += '</div>';
@@ -1310,7 +1335,7 @@ const anim = {
 function busMarkerIcon(color) {
   return L.divIcon({
     className: 'bus-anim-marker',
-    html: '<div class="bam-inner" style="background:' + color + '">&#128652;</div>',
+    html: '<div class="bam-inner" style="background:' + color + '">' + IC.bus + '</div>',
     iconSize:   [34, 34],
     iconAnchor: [17, 17],
   });
@@ -1393,7 +1418,7 @@ function animFrame(timestamp) {
     anim.isPlaying = false;
     anim.frameId   = null;
     const btn = document.getElementById("playTripBtn");
-    if (btn) btn.textContent = "\u25B6 Replay trip";
+    if (btn) btn.innerHTML = tripButtonMarkup("replay");
   }
 }
 
@@ -1432,7 +1457,7 @@ async function startAnimation(trip) {
   }).addTo(busLayer);
 
   const btn = document.getElementById("playTripBtn");
-  if (btn) btn.textContent = "\u23F8 Stop";
+  if (btn) btn.innerHTML = tripButtonMarkup("pause");
 
   anim.isPlaying = true;
   anim.frameId   = requestAnimationFrame(ts => {
@@ -1447,5 +1472,392 @@ function stopAnimation() {
   if (busLayer) busLayer.clearLayers();
   anim.marker = null;
   const btn = document.getElementById("playTripBtn");
-  if (btn) btn.textContent = "\u25B6 Play trip";
+  if (btn) btn.innerHTML = tripButtonMarkup("play");
+}
+
+
+// =========================================================================
+
+// Slot Allocation Simulation — Ring Road shared corridor
+
+// =========================================================================
+
+
+
+const SIM_ARC = ['koteshwor','gairigaun','sinamangal','airport',
+
+                  'chabahil','narayangopal','gongabu','nayabuspark'];
+
+
+
+const SIM_ROUTES_DEF = [
+
+  { id:'R2', color:'#2563eb', label:'Ring Road',        shortLabel:'R2', freqMin:5,  speedKmh:18 },
+
+  { id:'R6', color:'#db2777', label:'Kalanki–Airport', shortLabel:'R6', freqMin:8,  speedKmh:17 },
+
+  { id:'R7', color:'#9333ea', label:'Gokarna–Kalanki', shortLabel:'R7', freqMin:15, speedKmh:16 },
+
+];
+
+
+
+// 15 buses in 3 tight bunches, each containing ALL 3 routes
+
+const SIM_UNCORD = [
+
+  {id:'R2',km:0.00},{id:'R6',km:0.12},{id:'R7',km:0.28},{id:'R2',km:0.42},{id:'R6',km:0.58},{id:'R2',km:0.74},
+
+  {id:'R2',km:3.50},{id:'R6',km:3.65},{id:'R2',km:3.82},{id:'R7',km:4.08},
+
+  {id:'R2',km:7.00},{id:'R6',km:7.18},{id:'R2',km:7.38},{id:'R6',km:7.60},{id:'R7',km:7.84},
+
+];
+
+
+
+let simLayer=null,simLineLayer=null,simFrameId=null,simMode='uncoordinated';
+
+let simBusDefs=[],simArcPts=[],simArcCum=[],simArcLen=0,simCheckKm=0,simStartTs=null;
+
+const SIM_ANIM_SECS=25,SIM_REAL_MINS=30,SIM_SPEED_FACTOR=SIM_REAL_MINS*60/SIM_ANIM_SECS;
+
+
+
+function buildSimArc(){
+
+  simArcPts=[];simArcCum=[0];
+
+  SIM_ARC.forEach(function(id,i){
+
+    const s=STOP_BY_ID[id];if(!s)return;
+
+    simArcPts.push([s.lat,s.lon]);
+
+    if(i>0){const p=STOP_BY_ID[SIM_ARC[i-1]];if(p)simArcCum.push(simArcCum[simArcCum.length-1]+haversineKm(p.lat,p.lon,s.lat,s.lon));}
+
+  });
+
+  simArcLen=simArcCum[simArcCum.length-1];
+
+  const ci=SIM_ARC.indexOf('chabahil');
+
+  simCheckKm=ci>=0&&ci<simArcCum.length?simArcCum[ci]:simArcLen*0.45;
+
+}
+
+
+
+function lerpOnArc(km){
+
+  const pos=((km%simArcLen)+simArcLen)%simArcLen;
+
+  let seg=0;while(seg<simArcCum.length-2&&simArcCum[seg+1]<=pos)seg++;
+
+  const d=simArcCum[seg+1]-simArcCum[seg];
+
+  const t=d===0?0:(pos-simArcCum[seg])/d;
+
+  const a=simArcPts[seg],b=simArcPts[seg+1]||a;
+
+  return[a[0]+t*(b[0]-a[0]),a[1]+t*(b[1]-a[1])];
+
+}
+
+
+
+function buildSimBuses(mode){
+
+  const buses=SIM_UNCORD.map(function(def){
+
+    const r=SIM_ROUTES_DEF.find(function(x){return x.id===def.id;});
+
+    return{color:r.color,label:r.shortLabel,speedKmh:r.speedKmh,freqMin:r.freqMin,offsetKm:def.km,marker:null};
+
+  });
+
+  if(mode==='coordinated'){
+
+    const sp=simArcLen/buses.length;
+
+    buses.forEach(function(b,i){b.offsetKm=i*sp;});
+
+  }
+
+  return buses;
+
+}
+
+
+
+function computeArrivals(buses,win){
+
+  win=win||SIM_REAL_MINS;const arr=[];
+
+  buses.forEach(function(bus){
+
+    const arcT=simArcLen/bus.speedKmh*60;
+
+    let t=((simCheckKm-bus.offsetKm)/bus.speedKmh*60%arcT+arcT)%arcT;
+
+    while(t<=win){arr.push({t:Math.round(t*10)/10,color:bus.color});t+=arcT;}
+
+  });
+
+  return arr.sort(function(a,b){return a.t-b.t;});
+
+}
+
+
+
+function simMetrics(arr){
+
+  if(arr.length<2)return{avgGap:0,maxGap:0,variance:0};
+
+  const gaps=arr.slice(1).map(function(a,i){return a.t-arr[i].t;});
+
+  const avg=gaps.reduce(function(s,g){return s+g;},0)/gaps.length;
+
+  const max=Math.max.apply(null,gaps);
+
+  const v=gaps.reduce(function(s,g){return s+(g-avg)*(g-avg);},0)/gaps.length;
+
+  return{avgGap:+avg.toFixed(1),maxGap:+max.toFixed(1),variance:+v.toFixed(2)};
+
+}
+
+
+
+function drawTimeline(arrivals,containerId){
+
+  const el=document.getElementById(containerId);if(!el)return;
+
+  const W=Math.max(220,el.getBoundingClientRect().width||260),H=62,ml=4,mr=4,dotY=26;
+
+  const sx=function(t){return ml+(t/SIM_REAL_MINS)*(W-ml-mr);};
+
+  const gapData=arrivals.slice(1).map(function(a,i){return{s:arrivals[i].t,e:a.t,g:+(a.t-arrivals[i].t).toFixed(1)};});
+
+  gapData.sort(function(a,b){return b.g-a.g;});
+
+  let s='<svg width="'+W+'" height="'+H+'" xmlns="http://www.w3.org/2000/svg">';
+
+  gapData.slice(0,2).forEach(function(gap){
+
+    if(gap.g<0.8)return;
+
+    const x1=sx(gap.s),x2=sx(gap.e);
+
+    s+='<rect x="'+x1+'" y="'+(dotY-20)+'" width="'+(x2-x1)+'" height="18" fill="rgba(220,20,60,0.14)" rx="2"/>';
+
+    s+='<text x="'+((x1+x2)/2)+'" y="'+(dotY-6)+'" fill="#dc143c" font-size="8.5" text-anchor="middle" font-weight="700">'+gap.g+'m</text>';
+
+  });
+
+  s+='<line x1="'+ml+'" y1="'+dotY+'" x2="'+(W-mr)+'" y2="'+dotY+'" stroke="#222" stroke-width="1.5"/>';
+
+  for(let t=0;t<=SIM_REAL_MINS;t+=5){const x=sx(t);s+='<line x1="'+x+'" y1="'+dotY+'" x2="'+x+'" y2="'+(dotY+4)+'" stroke="#333" stroke-width="1"/><text x="'+x+'" y="'+(H-2)+'" fill="#555" font-size="8" text-anchor="middle">'+t+'m</text>';}
+
+  arrivals.forEach(function(a){s+='<circle cx="'+sx(a.t)+'" cy="'+dotY+'" r="6" fill="'+a.color+'" stroke="#0a0a0f" stroke-width="1.2"/>';});
+
+  s+='</svg>';el.innerHTML=s;
+
+}
+
+
+
+function drawHistogram(uArr,cArr,containerId){
+
+  const el=document.getElementById(containerId);if(!el)return;
+
+  const W=Math.max(220,el.getBoundingClientRect().width||260),H=90;
+
+  const BUCKETS=[{lo:0,hi:2,lbl:'0-2m'},{lo:2,hi:4,lbl:'2-4m'},{lo:4,hi:6,lbl:'4-6m'},{lo:6,hi:8,lbl:'6-8m'},{lo:8,hi:99,lbl:'8m+'}];
+
+  const uGaps=uArr.slice(1).map(function(a,i){return a.t-uArr[i].t;});
+
+  const cGaps=cArr.slice(1).map(function(a,i){return a.t-cArr[i].t;});
+
+  const cnt=function(gs,lo,hi){return gs.filter(function(g){return g>=lo&&g<hi;}).length;};
+
+  const uC=BUCKETS.map(function(b){return cnt(uGaps,b.lo,b.hi);});
+
+  const cC=BUCKETS.map(function(b){return cnt(cGaps,b.lo,b.hi);});
+
+  const maxC=Math.max.apply(null,uC.concat(cC).concat([1]));
+
+  const n=BUCKETS.length,pl=6,pr=6,pt=6,pb=20,pw=W-pl-pr,ph=H-pt-pb,bw=pw/n,barW=bw*0.36;
+
+  let s='<svg width="'+W+'" height="'+H+'" xmlns="http://www.w3.org/2000/svg">';
+
+  BUCKETS.forEach(function(b,i){
+
+    const bx=pl+i*bw+bw*0.08;
+
+    const uh=uC[i]/maxC*ph,ch=cC[i]/maxC*ph;
+
+    s+='<rect x="'+bx+'" y="'+(pt+ph-uh)+'" width="'+barW+'" height="'+uh+'" fill="#dc143c" opacity="0.75" rx="2"/>';
+
+    s+='<rect x="'+(bx+barW+2)+'" y="'+(pt+ph-ch)+'" width="'+barW+'" height="'+ch+'" fill="#16a34a" opacity="0.8" rx="2"/>';
+
+    s+='<text x="'+(bx+barW)+'" y="'+(H-4)+'" fill="#555" font-size="8" text-anchor="middle">'+b.lbl+'</text>';
+
+  });
+
+  s+='<line x1="'+pl+'" y1="'+(pt+ph)+'" x2="'+(W-pr)+'" y2="'+(pt+ph)+'" stroke="#333" stroke-width="1"/>';
+
+  s+='</svg>';el.innerHTML=s;
+
+}
+
+
+
+function renderSimPanel(){
+
+  const panel=document.getElementById('simPanel');if(!panel)return;
+
+  const uB=buildSimBuses('uncoordinated'),cB=buildSimBuses('coordinated');
+
+  const uArr=computeArrivals(uB),cArr=computeArrivals(cB);
+
+  const uM=simMetrics(uArr),cM=simMetrics(cArr);
+
+  const varDrop=uM.variance>0?Math.round((1-cM.variance/uM.variance)*100):0;
+
+  const maxDrop=uM.maxGap>0?Math.round((1-cM.maxGap/uM.maxGap)*100):0;
+
+  panel.innerHTML=
+
+    '<div class="sim-hdr"><div class="sim-title">Ring Road Slot Simulation</div>'+
+
+    '<div class="sim-subtitle">'+SIM_UNCORD.length+' buses · 3 routes · '+SIM_ARC.length+'-stop shared corridor</div></div>'+
+
+    '<div class="sim-toggle-row">'+
+
+      '<button class="sim-tb '+(simMode==='uncoordinated'?'active':'')+'" id="simBtnU">Uncoordinated (today)</button>'+
+
+      '<button class="sim-tb '+(simMode==='coordinated'?'active':'')+'" id="simBtnC">Slot-coordinated</button>'+
+
+    '</div>'+
+
+    '<div class="sim-section-label">Arrivals at Chabahil — 30 min window</div>'+
+
+    '<div class="sim-tl-wrap">'+
+
+      '<div class="sim-tl-row"><span class="sim-tl-tag uncord">Now</span><div id="simTlU" class="sim-tl-box"></div></div>'+
+
+      '<div class="sim-tl-row"><span class="sim-tl-tag coord">Slots</span><div id="simTlC" class="sim-tl-box"></div></div>'+
+
+    '</div>'+
+
+    '<div class="sim-section-label">Gap distribution '+
+
+      '<span style="color:#dc143c;font-weight:700">■ Uncoordinated</span> '+
+
+      '<span style="color:#16a34a;font-weight:700">■ Coordinated</span></div>'+
+
+    '<div style="padding:0 16px 8px"><div id="simHist" class="sim-hist-box"></div></div>'+
+
+    '<div class="sim-metrics-row">'+
+
+      '<div class="sim-metric bad"><div class="sim-metric-val">'+uM.maxGap+'<span class="sim-metric-unit">m</span></div><div class="sim-metric-lbl">Max wait today</div></div>'+
+
+      '<div class="sim-metric good"><div class="sim-metric-val">'+cM.maxGap+'<span class="sim-metric-unit">m</span></div><div class="sim-metric-lbl">Max wait (slots)</div></div>'+
+
+      '<div class="sim-metric accent"><div class="sim-metric-val">'+varDrop+'<span class="sim-metric-unit">%</span></div><div class="sim-metric-lbl">Variance ↓</div></div>'+
+
+    '</div>'+
+
+    '<div class="sim-section-label">Routes on corridor</div>'+
+
+    '<div class="sim-legend">'+SIM_ROUTES_DEF.map(function(r){return '<div class="sim-leg-row"><span class="sim-leg-dot" style="background:'+r.color+'"></span><span class="sim-leg-name">'+r.label+'</span><span class="sim-leg-freq">every '+r.freqMin+' min</span></div>';}).join('')+'</div>'+
+
+    '<div class="sim-explain">In uncoordinated mode buses from <strong>all 3 routes</strong> form convoys — watch 3 clumps of coloured dots on the map. Slot allocation spreads them evenly, cutting worst-case wait from <strong>'+uM.maxGap+' → '+cM.maxGap+' min</strong> ('+maxDrop+'% · '+varDrop+'% variance reduction).</div>';
+
+  document.getElementById('simBtnU')&&document.getElementById('simBtnU').addEventListener('click',function(){setSimMode('uncoordinated');});
+
+  document.getElementById('simBtnC')&&document.getElementById('simBtnC').addEventListener('click',function(){setSimMode('coordinated');});
+
+  requestAnimationFrame(function(){drawTimeline(uArr,'simTlU');drawTimeline(cArr,'simTlC');drawHistogram(uArr,cArr,'simHist');});
+
+}
+
+
+
+function simFrame(ts){
+
+  if(!simStartTs)simStartTs=ts;
+
+  const lT=((ts-simStartTs)/1000)%SIM_ANIM_SECS,rM=lT*SIM_SPEED_FACTOR/60;
+
+  simBusDefs.forEach(function(bus){if(!bus.marker)return;bus.marker.setLatLng(lerpOnArc(bus.offsetKm+rM*bus.speedKmh/60));});
+
+  simFrameId=requestAnimationFrame(simFrame);
+
+}
+
+
+
+function setSimMode(mode){
+
+  simMode=mode;simBusDefs=buildSimBuses(mode);
+
+  if(simLayer){simLayer.clearLayers();simBusDefs.forEach(function(bus){bus.marker=L.circleMarker([0,0],{radius:9,color:'#fff',weight:2,fillColor:bus.color,fillOpacity:0.95,interactive:false}).addTo(simLayer);});}
+
+  renderSimPanel();
+
+}
+
+
+
+function initSimulation(){
+
+  if(!map)return;
+
+  document.querySelector('.app').classList.add('app--sim');
+
+  buildSimArc();
+
+  if(!simLayer)simLayer=L.layerGroup().addTo(map);
+
+  if(!simLineLayer)simLineLayer=L.layerGroup().addTo(map);
+
+  simLayer.clearLayers();simLineLayer.clearLayers();
+
+  if(simArcPts.length>1){
+
+    L.polyline(simArcPts,{color:'#ffd700',weight:8,opacity:0.65}).bindTooltip('Shared corridor (Ring Road · R6 · R7)',{sticky:true}).addTo(simLineLayer);
+
+    SIM_ARC.forEach(function(id){const s=STOP_BY_ID[id];if(!s)return;L.circleMarker([s.lat,s.lon],{radius:5,color:'#ffd700',weight:2,fillColor:'#0a0a0f',fillOpacity:1}).bindTooltip(s.name,{direction:'top'}).addTo(simLineLayer);});
+
+    map.fitBounds(L.latLngBounds(simArcPts),{padding:[60,60]});
+
+  }
+
+  simBusDefs=buildSimBuses(simMode);
+
+  simBusDefs.forEach(function(bus){bus.marker=L.circleMarker([0,0],{radius:9,color:'#fff',weight:2,fillColor:bus.color,fillOpacity:0.95,interactive:false}).addTo(simLayer);});
+
+  renderSimPanel();
+
+  simStartTs=null;if(simFrameId)cancelAnimationFrame(simFrameId);
+
+  simFrameId=requestAnimationFrame(simFrame);
+
+}
+
+
+
+function stopSimulation(){
+
+  if(simFrameId){cancelAnimationFrame(simFrameId);simFrameId=null;}
+
+  if(simLayer)simLayer.clearLayers();
+
+  if(simLineLayer)simLineLayer.clearLayers();
+
+  document.querySelector('.app').classList.remove('app--sim');
+
+  simStartTs=null;
+
 }
